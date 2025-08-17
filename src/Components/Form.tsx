@@ -1,34 +1,41 @@
 import React, { useState } from "react";
 import { categories } from "../Data/categori";
+import type { Activity as Actividad } from "./Types";
 
 export const Form = () => {
-
-
-
-
-  const [activity, setActivity] = useState({
+  const [activity, setActivity] = useState<Actividad>({
     categori: 1,
     name: "",
-    calories:0
-
+    calories: 0,
   });
 
-  
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
-          
-      setActivity({
-        ...activity,
-        [e.target.id] : e.target.value
-      })
-      
-      
-    }
+  const handleChange = (
+    e:
+      | React.ChangeEvent<HTMLSelectElement>
+      | React.ChangeEvent<HTMLInputElement>
+  ) => {
 
-   
+    const isNumberField = ["categori", "calories"].includes(e.target.id);
 
+    setActivity({
+      ...activity,
+      [e.target.id]: isNumberField ? +e.target.value : e.target.value,
+    });
+  };
+
+  const isSutmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      console.log('Submit....')
+  }
+
+  const isValidActivity = () => {
+    const { name, calories } = activity;
+    console.log(name.trim() !== "");
+    return name.trim() !== "" && calories > 0;
+  };
 
   return (
-    <form className="space-y-5 bg-white shadow p-10 rounded-lg">
+    <form className="space-y-5 bg-white shadow p-10 rounded-lg" onSubmit={  isSutmit } >
       <div className="grid grtid-cols-1 gap-3">
         <label htmlFor="Categori">Categoria: </label>
         <select
@@ -55,7 +62,7 @@ export const Form = () => {
           type="text"
           placeholder="Ej. Comida, jugo de Naranja, Ensalada, Ejercicio, Pesas, Bicicleta"
           value={activity.name}
-          onChange={ handleChange  }
+          onChange={handleChange}
         />
       </div>
 
@@ -69,15 +76,15 @@ export const Form = () => {
           type="number"
           placeholder="Calorias, Ej: 300, 500"
           value={activity.calories}
-               onChange={handleChange} 
+          onChange={handleChange}
         />
       </div>
 
       <input
         type="submit"
-        className="bg-gray-800 hover:bg-gray-900 w-full- p-2 uppercase text-white cursor-pointer"
-        value="Guardar Comida o Guardar Ejercicio"
-        
+        className="bg-gray-800 hover:bg-gray-900 w-full- p-2 uppercase text-white cursor-pointer disabled:opacity-10"
+        value={activity.categori == 1 ? "Guardar comida" : "Guardar ejercicio"}
+        disabled={!isValidActivity()}
       />
     </form>
   );
