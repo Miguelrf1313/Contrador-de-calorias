@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, type Dispatch } from "react";
 import { categories } from "../Data/categori";
 import type { Activity as Actividad } from "./Types";
+import type { activityActios } from "../Reducers/Activity-reducer";
 
-export const Form = () => {
+type FormProps = {
+  dispatch: Dispatch<activityActios>;
+};
+
+export const Form = ({ dispatch }: FormProps) => {
   const [activity, setActivity] = useState<Actividad>({
     categori: 1,
     name: "",
@@ -14,7 +19,6 @@ export const Form = () => {
       | React.ChangeEvent<HTMLSelectElement>
       | React.ChangeEvent<HTMLInputElement>
   ) => {
-
     const isNumberField = ["categori", "calories"].includes(e.target.id);
 
     setActivity({
@@ -24,9 +28,9 @@ export const Form = () => {
   };
 
   const isSutmit = (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      console.log('Submit....')
-  }
+    e.preventDefault();
+    dispatch({ type: "save-activity", payload: { newActivity: activity } });
+  };
 
   const isValidActivity = () => {
     const { name, calories } = activity;
@@ -35,7 +39,10 @@ export const Form = () => {
   };
 
   return (
-    <form className="space-y-5 bg-white shadow p-10 rounded-lg" onSubmit={  isSutmit } >
+    <form
+      className="space-y-5 bg-white shadow p-10 rounded-lg"
+      onSubmit={isSutmit}
+    >
       <div className="grid grtid-cols-1 gap-3">
         <label htmlFor="Categori">Categoria: </label>
         <select
